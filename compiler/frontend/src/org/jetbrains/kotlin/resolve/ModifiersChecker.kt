@@ -107,7 +107,8 @@ object ModifierCheckerCore {
             ENUM_CLASS,
             ANNOTATION_CLASS,
             TYPEALIAS
-        )
+        ),
+        TYPECLASS_KEYWORD to EnumSet.of(INTERFACE)
     )
 
     private val featureDependencies = mapOf(
