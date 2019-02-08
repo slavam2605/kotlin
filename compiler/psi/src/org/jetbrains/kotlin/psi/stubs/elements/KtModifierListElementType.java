@@ -41,14 +41,17 @@ public class KtModifierListElementType<T extends KtModifierList> extends KtStubE
 
     @Override
     public void serialize(@NotNull KotlinModifierListStub stub, @NotNull StubOutputStream dataStream) throws IOException {
-        int mask = ((KotlinModifierListStubImpl) stub).getMask();
-        dataStream.writeVarInt(mask);
+        long mask = ((KotlinModifierListStubImpl) stub).getMask();
+        dataStream.writeVarInt((int) mask);
+        dataStream.writeVarInt((int) (mask >> 32));
     }
 
     @NotNull
     @Override
     public KotlinModifierListStub deserialize(@NotNull StubInputStream dataStream, StubElement parentStub) throws IOException {
-        int mask = dataStream.readVarInt();
+        int lowMask = dataStream.readVarInt();
+        int highMask = dataStream.readVarInt();
+        long mask = (long) highMask << 32 | lowMask & 0xFFFFFFFFL;
         return new KotlinModifierListStubImpl(parentStub, mask, this);
     }
 }
