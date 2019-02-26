@@ -241,6 +241,7 @@ LONELY_BACKTICK=`
 {CHARACTER_LITERAL} { return KtTokens.CHARACTER_LITERAL; }
 
 "typealias"  { return KtTokens.TYPE_ALIAS_KEYWORD ;}
+"typeclass"  { return KtTokens.TYPECLASS_KEYWORD ;}
 "interface"  { return KtTokens.INTERFACE_KEYWORD ;}
 "continue"   { return KtTokens.CONTINUE_KEYWORD ;}
 "package"    { return KtTokens.PACKAGE_KEYWORD ;}

@@ -1862,24 +1862,31 @@ public class KotlinParsing extends AbstractKotlinParsing {
     /*
      * typeConstraint
      *   : annotations SimpleName ":" type
+     *   | "typeclass" type
      *   ;
      */
     private void parseTypeConstraint() {
         PsiBuilder.Marker constraint = mark();
 
-        parseAnnotations(DEFAULT);
+        if (_at(TYPECLASS_KEYWORD)) {
+            advance();
+            parseTypeRef();
+        } else {
+            parseAnnotations(DEFAULT);
 
-        PsiBuilder.Marker reference = mark();
-        if (expect(IDENTIFIER, "Expecting type parameter name", TokenSet.orSet(TokenSet.create(COLON, COMMA, LBRACE, RBRACE), TYPE_REF_FIRST))) {
-            reference.done(REFERENCE_EXPRESSION);
+            PsiBuilder.Marker reference = mark();
+            if (expect(IDENTIFIER, "Expecting type parameter name",
+                       TokenSet.orSet(TokenSet.create(COLON, COMMA, LBRACE, RBRACE), TYPE_REF_FIRST))) {
+                reference.done(REFERENCE_EXPRESSION);
+            }
+            else {
+                reference.drop();
+            }
+
+            expect(COLON, "Expecting ':' before the upper bound", TokenSet.orSet(TokenSet.create(LBRACE, RBRACE), TYPE_REF_FIRST));
+
+            parseTypeRef();
         }
-        else {
-            reference.drop();
-        }
-
-        expect(COLON, "Expecting ':' before the upper bound", TokenSet.orSet(TokenSet.create(LBRACE, RBRACE), TYPE_REF_FIRST));
-
-        parseTypeRef();
 
         constraint.done(TYPE_CONSTRAINT);
     }
