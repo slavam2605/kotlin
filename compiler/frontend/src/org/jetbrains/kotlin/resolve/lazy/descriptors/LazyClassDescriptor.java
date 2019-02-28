@@ -278,7 +278,7 @@ public class LazyClassDescriptor extends ClassDescriptorBase implements ClassDes
         ) {
             {
                 initialize(null, null, Collections.emptyList(), Collections.emptyList(),
-                           null, Modality.FINAL, Visibilities.PRIVATE);
+                           Collections.<KotlinType>emptyList(), null, Modality.FINAL, Visibilities.PRIVATE);
             }
 
             @NotNull

@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
+import org.jetbrains.kotlin.types.KotlinType
 
 object InlineClassDescriptorResolver {
     @JvmField
@@ -72,6 +73,7 @@ object InlineClassDescriptorResolver {
             null,
             emptyList<TypeParameterDescriptor>(),
             createValueParametersForSpecializedEquals(functionDescriptor, inlinedValue),
+            emptyList<KotlinType>(),
             owner.builtIns.booleanType,
             Modality.FINAL,
             Visibilities.PUBLIC
@@ -99,6 +101,7 @@ object InlineClassDescriptorResolver {
             if (isBoxMethod) null else owner.thisAsReceiverParameter,
             emptyList<TypeParameterDescriptor>(),
             if (isBoxMethod) listOf(createValueParameterForBoxing(functionDescriptor, inlinedValue)) else emptyList(),
+            emptyList<KotlinType>(),
             if (isBoxMethod) owner.defaultType else inlinedValue.returnType,
             Modality.FINAL,
             Visibilities.PUBLIC

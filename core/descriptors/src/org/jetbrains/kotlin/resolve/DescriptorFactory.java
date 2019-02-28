@@ -138,7 +138,7 @@ public class DescriptorFactory {
                                                     CallableMemberDescriptor.Kind.SYNTHESIZED, enumClass.getSource());
         return values.initialize(null, null, Collections.<TypeParameterDescriptor>emptyList(),
                                  Collections.<ValueParameterDescriptor>emptyList(),
-                                 getBuiltIns(enumClass).getArrayType(Variance.INVARIANT, enumClass.getDefaultType()),
+                                 Collections.<KotlinType>emptyList(), getBuiltIns(enumClass).getArrayType(Variance.INVARIANT, enumClass.getDefaultType()),
                                  Modality.FINAL, Visibilities.PUBLIC);
     }
 
@@ -156,7 +156,7 @@ public class DescriptorFactory {
                 enumClass.getSource()
         );
         return valueOf.initialize(null, null, Collections.<TypeParameterDescriptor>emptyList(),
-                                  Collections.singletonList(parameterDescriptor), enumClass.getDefaultType(),
+                                  Collections.singletonList(parameterDescriptor), Collections.<KotlinType>emptyList(), enumClass.getDefaultType(),
                                   Modality.FINAL, Visibilities.PUBLIC);
     }
 

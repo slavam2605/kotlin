@@ -70,10 +70,28 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
             @Nullable ReceiverParameterDescriptor dispatchReceiverParameter,
             @NotNull List<? extends TypeParameterDescriptor> typeParameters,
             @NotNull List<ValueParameterDescriptor> unsubstitutedValueParameters,
+            List<KotlinType> typeclassBounds,
             @Nullable KotlinType unsubstitutedReturnType,
             @Nullable Modality modality,
             @NotNull Visibility visibility
     ) {
+        for (int boundIndex = 0; boundIndex < typeclassBounds.size(); boundIndex++) {
+            KotlinType bound = typeclassBounds.get(boundIndex);
+            unsubstitutedValueParameters.add(new ValueParameterDescriptorImpl(
+                    this,
+                    null,
+                    unsubstitutedValueParameters.size(),
+                    Annotations.Companion.getEMPTY(),
+                    Name.special("<typeclassImpl" + boundIndex + ">"),
+                    bound,
+                    false,
+                    false,
+                    false,
+                    null,
+                    getSource()
+            ));
+        }
+
         this.typeParameters = CollectionsKt.toList(typeParameters);
         this.unsubstitutedValueParameters = CollectionsKt.toList(unsubstitutedValueParameters);
         this.unsubstitutedReturnType = unsubstitutedReturnType;
@@ -657,7 +675,7 @@ public abstract class FunctionDescriptorImpl extends DeclarationDescriptorNonRoo
                 substitutedExpectedThis,
                 substitutedTypeParameters,
                 substitutedValueParameters,
-                substitutedReturnType,
+                Collections.<KotlinType>emptyList(), substitutedReturnType,
                 configuration.newModality,
                 configuration.newVisibility
         );

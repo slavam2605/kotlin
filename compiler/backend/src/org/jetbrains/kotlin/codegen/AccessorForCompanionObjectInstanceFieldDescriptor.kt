@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.FunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.KotlinType
 
 class AccessorForCompanionObjectInstanceFieldDescriptor(
     val companionObjectDescriptor: ClassDescriptor,
@@ -25,6 +26,7 @@ class AccessorForCompanionObjectInstanceFieldDescriptor(
     init {
         initialize(
             null, null, emptyList(), emptyList(),
+            emptyList<KotlinType>(),
             companionObjectDescriptor.defaultType,
             Modality.FINAL,
             Visibilities.LOCAL

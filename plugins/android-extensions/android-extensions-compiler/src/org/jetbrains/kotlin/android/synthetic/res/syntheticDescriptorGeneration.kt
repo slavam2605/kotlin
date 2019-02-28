@@ -49,7 +49,7 @@ internal fun genClearCacheFunction(packageFragmentDescriptor: PackageFragmentDes
     val unitType = packageFragmentDescriptor.builtIns.unitType
     return function.initialize(
         DescriptorFactory.createExtensionReceiverParameterForCallable(function, receiverType, Annotations.EMPTY),
-        null, emptyList(), emptyList(), unitType, Modality.FINAL, Visibilities.PUBLIC
+        null, emptyList(), emptyList(), emptyList<KotlinType>(), unitType, Modality.FINAL, Visibilities.PUBLIC
     )
 }
 

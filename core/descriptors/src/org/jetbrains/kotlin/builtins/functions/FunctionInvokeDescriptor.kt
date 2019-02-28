@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.descriptors.impl.FunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.TypeSubstitutor
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.util.OperatorNameConventions
@@ -116,15 +117,16 @@ class FunctionInvokeDescriptor private constructor(
 
             val result = FunctionInvokeDescriptor(functionClass, null, CallableMemberDescriptor.Kind.DECLARATION, isSuspend)
             result.initialize(
-                    null,
-                    functionClass.thisAsReceiverParameter,
-                    listOf(),
-                    typeParameters.takeWhile { it.variance == Variance.IN_VARIANCE }
-                            .withIndex()
-                            .map { createValueParameter(result, it.index, it.value) },
-                    typeParameters.last().defaultType,
-                    Modality.ABSTRACT,
-                    Visibilities.PUBLIC
+                null,
+                functionClass.thisAsReceiverParameter,
+                listOf(),
+                typeParameters.takeWhile { it.variance == Variance.IN_VARIANCE }
+                        .withIndex()
+                        .map { createValueParameter(result, it.index, it.value) },
+                emptyList<KotlinType>(),
+                typeParameters.last().defaultType,
+                Modality.ABSTRACT,
+                Visibilities.PUBLIC
             )
             result.setHasSynthesizedParameterNames(true)
             return result

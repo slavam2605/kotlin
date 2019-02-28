@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.descriptors.*;
 import org.jetbrains.kotlin.descriptors.annotations.Annotations;
 import org.jetbrains.kotlin.name.Name;
+import org.jetbrains.kotlin.types.KotlinType;
 import org.jetbrains.kotlin.types.TypeSubstitutor;
 
 import java.util.Collection;
@@ -73,7 +74,7 @@ public class ClassConstructorDescriptorImpl extends FunctionDescriptorImpl imple
         super.initialize(
                 null, calculateDispatchReceiverParameter(),
                 typeParameterDescriptors,
-                unsubstitutedValueParameters, null,
+                unsubstitutedValueParameters, Collections.<KotlinType>emptyList(), null,
                 Modality.FINAL, visibility);
         return this;
     }

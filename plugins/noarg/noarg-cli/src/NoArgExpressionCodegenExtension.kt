@@ -30,6 +30,7 @@ import org.jetbrains.kotlin.resolve.jvm.AsmTypes
 import org.jetbrains.kotlin.resolve.jvm.annotations.findJvmOverloadsAnnotation
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.JvmDeclarationOrigin
 import org.jetbrains.kotlin.resolve.jvm.jvmSignature.JvmMethodSignature
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.org.objectweb.asm.Opcodes
 
 class NoArgExpressionCodegenExtension(val invokeInitializers: Boolean = false) : ExpressionCodegenExtension {
@@ -74,8 +75,10 @@ class NoArgExpressionCodegenExtension(val invokeInitializers: Boolean = false) :
 
     private fun createNoArgConstructorDescriptor(containingClass: ClassDescriptor): ConstructorDescriptor {
         return ClassConstructorDescriptorImpl.createSynthesized(containingClass, Annotations.EMPTY, false, SourceElement.NO_SOURCE).apply {
-            initialize(null, calculateDispatchReceiverParameter(), emptyList(), emptyList(),
-                       containingClass.builtIns.unitType, Modality.OPEN, Visibilities.PUBLIC)
+            initialize(
+                null, calculateDispatchReceiverParameter(), emptyList(), emptyList(),
+                emptyList<KotlinType>(), containingClass.builtIns.unitType, Modality.OPEN, Visibilities.PUBLIC
+            )
         }
     }
 

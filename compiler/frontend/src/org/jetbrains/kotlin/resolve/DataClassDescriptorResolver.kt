@@ -20,10 +20,8 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
-import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
-import org.jetbrains.kotlin.util.OperatorNameConventions
+import org.jetbrains.kotlin.types.KotlinType
 
 object DataClassDescriptorResolver {
     val COPY_METHOD_NAME = Name.identifier("copy")
@@ -68,6 +66,7 @@ object DataClassDescriptorResolver {
             classDescriptor.thisAsReceiverParameter,
             emptyList<TypeParameterDescriptor>(),
             emptyList<ValueParameterDescriptor>(),
+            emptyList<KotlinType>(),
             property.type,
             Modality.FINAL,
             property.visibility
@@ -112,6 +111,7 @@ object DataClassDescriptorResolver {
             classDescriptor.thisAsReceiverParameter,
             emptyList<TypeParameterDescriptor>(),
             parameterDescriptors,
+            emptyList<KotlinType>(),
             classDescriptor.defaultType,
             Modality.FINAL,
             Visibilities.PUBLIC

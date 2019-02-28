@@ -21,6 +21,7 @@ import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.FunctionDescriptorImpl
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.KotlinType
 import java.util.*
 
 class AccessorForFunctionDescriptor(
@@ -41,6 +42,7 @@ class AccessorForFunctionDescriptor(
                 calleeDescriptor.dispatchReceiverParameter,
             copyTypeParameters(calleeDescriptor),
             copyValueParameters(calleeDescriptor),
+            emptyList<KotlinType>(),
             calleeDescriptor.returnType,
             Modality.FINAL,
             Visibilities.LOCAL

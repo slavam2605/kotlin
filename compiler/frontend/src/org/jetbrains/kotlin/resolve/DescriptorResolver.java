@@ -527,11 +527,13 @@ public class DescriptorResolver {
                 upperBoundCheckRequests.add(new UpperBoundCheckRequest(ktTypeParameter.getNameAsName(), extendsBound, type));
             }
         }
+        List<KotlinType> typeclassBounds = new ArrayList<>();
         for (KtTypeConstraint constraint : declaration.getTypeConstraints()) {
             if (constraint.isTypeclassBound()) {
                 KtTypeReference boundTypeReference = constraint.getBoundTypeReference();
                 if (boundTypeReference != null) {
                     KotlinType type = typeResolver.resolveType(scope, boundTypeReference, trace, false);
+                    typeclassBounds.add(type);
                     if (!TypeUtilsKt.isTypeclassInterface(type)) {
                         trace.report(TYPECLASS_BOUND_SHOULD_BE_MARKED.on(boundTypeReference));
                     }
@@ -558,6 +560,7 @@ public class DescriptorResolver {
                 }
             }
         }
+        trace.record(BindingContext.PARAMETER_LIST_TYPECLASS_BOUNDS, declaration, typeclassBounds);
 
         for (TypeParameterDescriptorImpl parameter : parameters) {
             parameter.addDefaultUpperBound();

@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.scopes.GivenFunctionsMemberScope
 import org.jetbrains.kotlin.storage.StorageManager
+import org.jetbrains.kotlin.types.KotlinType
 
 class CloneableClassScope(
     storageManager: StorageManager,
@@ -21,8 +22,8 @@ class CloneableClassScope(
     override fun computeDeclaredFunctions(): List<FunctionDescriptor> = listOf(
         SimpleFunctionDescriptorImpl.create(containingClass, Annotations.EMPTY, CLONE_NAME, DECLARATION, SourceElement.NO_SOURCE).apply {
             initialize(
-                null, containingClass.thisAsReceiverParameter, emptyList(), emptyList(), containingClass.builtIns.anyType,
-                Modality.OPEN, Visibilities.PROTECTED
+                null, containingClass.thisAsReceiverParameter, emptyList(), emptyList(), emptyList<KotlinType>(),
+                containingClass.builtIns.anyType, Modality.OPEN, Visibilities.PROTECTED
             )
         }
     )

@@ -214,7 +214,7 @@ public class SingleAbstractMethodUtils {
                 null,
                 typeParameters.descriptors,
                 Collections.singletonList(parameter),
-                returnType,
+                Collections.<KotlinType>emptyList(), returnType,
                 Modality.FINAL,
                 samInterface.getVisibility()
         );
@@ -266,7 +266,7 @@ public class SingleAbstractMethodUtils {
                         original.getDispatchReceiverParameter(),
                         typeParameters,
                         valueParameters,
-                        returnType,
+                        Collections.<KotlinType>emptyList(), returnType,
                         Modality.FINAL,
                         original.getVisibility()
                 );

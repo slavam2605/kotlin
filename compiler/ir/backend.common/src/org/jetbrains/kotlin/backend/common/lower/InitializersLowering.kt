@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
+import org.jetbrains.kotlin.types.KotlinType
 
 object SYNTHESIZED_INIT_BLOCK: IrStatementOriginImpl("SYNTHESIZED_INIT_BLOCK")
 
@@ -130,8 +131,8 @@ class InitializersLowering(
         )
         staticInitializerDescriptor.initialize(
             null, null, emptyList(), emptyList(),
-            irClass.descriptor.builtIns.unitType,
-            Modality.FINAL, Visibilities.PUBLIC
+            emptyList<KotlinType>(),
+            irClass.descriptor.builtIns.unitType, Modality.FINAL, Visibilities.PUBLIC
         )
         irClass.declarations.add(
             IrFunctionImpl(

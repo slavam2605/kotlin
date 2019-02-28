@@ -295,9 +295,11 @@ class FinallyBlocksLowering(val context: CommonBackendContext, private val throw
                 CallableMemberDescriptor.Kind.SYNTHESIZED,
                 SourceElement.NO_SOURCE
             ).apply {
-                initialize(null, null, emptyList(), emptyList(), returnType,
-                           Modality.ABSTRACT,
-                           Visibilities.PRIVATE
+                initialize(
+                    null, null, emptyList(), emptyList(), emptyList<KotlinType>(),
+                    returnType,
+                    Modality.ABSTRACT,
+                    Visibilities.PRIVATE
                 )
             }
 

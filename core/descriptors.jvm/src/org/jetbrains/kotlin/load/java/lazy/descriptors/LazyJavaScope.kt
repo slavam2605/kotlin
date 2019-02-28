@@ -137,6 +137,7 @@ abstract class LazyJavaScope(protected val c: LazyJavaResolverContext) : MemberS
             },
             getDispatchReceiverParameter(),
             effectiveSignature.typeParameters,
+            emptyList<KotlinType>(),
             effectiveSignature.valueParameters,
             effectiveSignature.returnType,
             Modality.convertFromFlags(method.isAbstract, !method.isFinal),

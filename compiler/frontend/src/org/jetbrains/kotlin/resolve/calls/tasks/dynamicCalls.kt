@@ -129,6 +129,7 @@ class DynamicCallableDescriptors(storageManager: StorageManager, builtIns: Kotli
             createDynamicDispatchReceiverParameter(functionDescriptor),
             createTypeParameters(functionDescriptor, call),
             createValueParameters(functionDescriptor, call),
+            emptyList<KotlinType>(),
             dynamicType,
             Modality.FINAL,
             Visibilities.PUBLIC

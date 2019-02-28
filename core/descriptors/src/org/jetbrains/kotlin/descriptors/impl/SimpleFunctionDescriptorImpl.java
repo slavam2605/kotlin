@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.descriptors.annotations.Annotations;
 import org.jetbrains.kotlin.name.Name;
 import org.jetbrains.kotlin.types.KotlinType;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,11 +58,12 @@ public class SimpleFunctionDescriptorImpl extends FunctionDescriptorImpl impleme
             @Nullable ReceiverParameterDescriptor dispatchReceiverParameter,
             @NotNull List<? extends TypeParameterDescriptor> typeParameters,
             @NotNull List<ValueParameterDescriptor> unsubstitutedValueParameters,
-            @Nullable KotlinType unsubstitutedReturnType,
+            List<KotlinType> typeclassBounds, @Nullable KotlinType unsubstitutedReturnType,
             @Nullable Modality modality,
             @NotNull Visibility visibility
     ) {
-        return initialize(extensionReceiverParameter, dispatchReceiverParameter, typeParameters, unsubstitutedValueParameters,
+        return initialize(extensionReceiverParameter, dispatchReceiverParameter, typeParameters, Collections.<KotlinType>emptyList(),
+                          unsubstitutedValueParameters,
                           unsubstitutedReturnType, modality, visibility, null);
     }
 
@@ -70,6 +72,7 @@ public class SimpleFunctionDescriptorImpl extends FunctionDescriptorImpl impleme
             @Nullable ReceiverParameterDescriptor extensionReceiverParameter,
             @Nullable ReceiverParameterDescriptor dispatchReceiverParameter,
             @NotNull List<? extends TypeParameterDescriptor> typeParameters,
+            List<KotlinType> typeclassBounds,
             @NotNull List<ValueParameterDescriptor> unsubstitutedValueParameters,
             @Nullable KotlinType unsubstitutedReturnType,
             @Nullable Modality modality,
@@ -77,7 +80,7 @@ public class SimpleFunctionDescriptorImpl extends FunctionDescriptorImpl impleme
             @Nullable Map<? extends UserDataKey<?>, ?> userData
     ) {
         super.initialize(extensionReceiverParameter, dispatchReceiverParameter, typeParameters, unsubstitutedValueParameters,
-                         unsubstitutedReturnType, modality, visibility);
+                         typeclassBounds, unsubstitutedReturnType, modality, visibility);
 
         if (userData != null && !userData.isEmpty()) {
             userDataMap = new LinkedHashMap<UserDataKey<?>, Object>(userData);

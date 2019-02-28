@@ -527,9 +527,9 @@ internal class DeepCopyIrTreeWithDescriptors(val targetDescriptor: FunctionDescr
                             /* dispatchReceiverParameter    = */ newDispatchReceiverParameter,
                             /* typeParameters               = */ newTypeParameters,
                             /* unsubstitutedValueParameters = */ newValueParameters,
-                            /* unsubstitutedReturnType      = */ newReturnType,
-                            /* modality                     = */ oldDescriptor.modality,
-                            /* visibility                   = */ oldDescriptor.visibility
+                            /* unsubstitutedReturnType      = */ emptyList<KotlinType>(),
+                            /* modality                     = */ newReturnType,
+                            /* visibility                   = */ oldDescriptor.modality, oldDescriptor.visibility
                     )
                     isTailrec = oldDescriptor.isTailrec
                     isSuspend = oldDescriptor.isSuspend
@@ -550,9 +550,9 @@ internal class DeepCopyIrTreeWithDescriptors(val targetDescriptor: FunctionDescr
                             /* dispatchReceiverParameter    = */ null,                              //  For constructor there is no explicit dispatch receiver.
                             /* typeParameters               = */ newTypeParameters,
                             /* unsubstitutedValueParameters = */ newValueParameters,
-                            /* unsubstitutedReturnType      = */ returnType,
-                            /* modality                     = */ oldDescriptor.modality,
-                            /* visibility                   = */ oldDescriptor.visibility
+                            /* unsubstitutedReturnType      = */ emptyList<KotlinType>(),
+                            /* modality                     = */ returnType,
+                            /* visibility                   = */ oldDescriptor.modality, oldDescriptor.visibility
                     )
                 }
 

@@ -221,10 +221,13 @@ class FunctionDescriptorResolver(
             )
         }
 
+        val typeclassBounds = trace[BindingContext.PARAMETER_LIST_TYPECLASS_BOUNDS, function] ?: emptyList()
+
         functionDescriptor.initialize(
             extensionReceiver,
             getDispatchReceiverParameterIfNeeded(container),
             typeParameterDescriptors,
+            typeclassBounds,
             valueParameterDescriptors,
             returnType,
             modality,

@@ -48,6 +48,7 @@ import org.jetbrains.kotlin.renderer.DescriptorRenderer
 import org.jetbrains.kotlin.resolve.descriptorUtil.setSingleOverridden
 import org.jetbrains.kotlin.resolve.findMemberWithMaxVisibility
 import org.jetbrains.kotlin.resolve.lazy.BodyResolveMode
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
 import org.jetbrains.kotlin.types.typeUtil.supertypes
 import java.util.*
@@ -219,8 +220,14 @@ class ChangeMemberFunctionSignatureFix private constructor(
 
             return descriptor.apply {
                 initialize(
-                    function.extensionReceiverParameter?.copy(this), function.dispatchReceiverParameter,
-                    function.typeParameters, parameters, function.returnType, function.modality, function.visibility
+                    function.extensionReceiverParameter?.copy(this),
+                    function.dispatchReceiverParameter,
+                    function.typeParameters,
+                    parameters,
+                    emptyList<KotlinType>(),
+                    function.returnType,
+                    function.modality,
+                    function.visibility
                 )
                 isOperator = function.isOperator
                 isInfix = function.isInfix

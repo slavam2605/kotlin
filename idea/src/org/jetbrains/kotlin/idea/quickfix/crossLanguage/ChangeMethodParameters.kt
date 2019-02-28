@@ -16,7 +16,6 @@ import org.jetbrains.kotlin.idea.caches.resolve.resolveToDescriptorIfAny
 import org.jetbrains.kotlin.idea.core.ShortenReferences
 import org.jetbrains.kotlin.idea.quickfix.KotlinQuickFixAction
 import org.jetbrains.kotlin.idea.util.IdeDescriptorRenderers
-import org.jetbrains.kotlin.js.descriptorUtils.getJetTypeFqName
 import org.jetbrains.kotlin.load.java.NOT_NULL_ANNOTATIONS
 import org.jetbrains.kotlin.load.java.NULLABLE_ANNOTATIONS
 import org.jetbrains.kotlin.name.FqName
@@ -70,6 +69,7 @@ internal class ChangeMethodParameters(
                         false, false, null, SourceElement.NO_SOURCE
                     )
                 },
+                emptyList<KotlinType>(),
                 functionDescriptor.returnType,
                 functionDescriptor.modality,
                 functionDescriptor.visibility

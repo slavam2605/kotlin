@@ -34,6 +34,7 @@ import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.annotations.JVM_STATIC_ANNOTATION_FQ_NAME
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.org.objectweb.asm.Opcodes
 
 internal val jvmStaticAnnotationPhase = makeIrFilePhase(
@@ -221,8 +222,9 @@ private fun makeJvmStaticFunctionSymbol(
         null,
         oldFunctionSymbol.descriptor.typeParameters,
         oldFunctionSymbol.descriptor.valueParameters.map { it.copy(proxyDescriptorForIrFunction, it.name, it.index) },
-        oldFunctionSymbol.descriptor.returnType,
+        emptyList<KotlinType>(),
         // FINAL on static interface members makes JVM unhappy, so remove it.
+        oldFunctionSymbol.descriptor.returnType,
         if (ownerClass.isInterface) Modality.OPEN else oldFunctionSymbol.descriptor.modality,
         visibility
     )

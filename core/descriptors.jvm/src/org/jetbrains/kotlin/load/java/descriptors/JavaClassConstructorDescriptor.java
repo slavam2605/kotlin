@@ -26,6 +26,7 @@ import org.jetbrains.kotlin.name.Name;
 import org.jetbrains.kotlin.resolve.DescriptorFactory;
 import org.jetbrains.kotlin.types.KotlinType;
 
+import java.util.Collections;
 import java.util.List;
 
 public class JavaClassConstructorDescriptor extends ClassConstructorDescriptorImpl implements JavaCallableMemberDescriptor {
@@ -136,7 +137,7 @@ public class JavaClassConstructorDescriptor extends ClassConstructorDescriptorIm
                 getDispatchReceiverParameter(),
                 getTypeParameters(),
                 UtilKt.copyValueParameters(enhancedValueParametersData, getValueParameters(), enhanced),
-                enhancedReturnType,
+                Collections.<KotlinType>emptyList(), enhancedReturnType,
                 getModality(),
                 getVisibility()
         );

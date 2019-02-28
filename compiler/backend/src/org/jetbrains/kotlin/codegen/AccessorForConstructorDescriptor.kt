@@ -59,6 +59,7 @@ class AccessorForConstructorDescriptor(
             calleeDescriptor.dispatchReceiverParameter,
             copyTypeParameters(calleeDescriptor),
             copyValueParameters(calleeDescriptor),
+            emptyList<KotlinType>(),
             calleeDescriptor.returnType,
             Modality.FINAL,
             Visibilities.LOCAL

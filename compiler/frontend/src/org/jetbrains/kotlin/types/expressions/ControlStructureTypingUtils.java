@@ -185,7 +185,7 @@ public class ControlStructureTypingUtils {
                 null,
                 Lists.newArrayList(typeParameter),
                 valueParameters,
-                returnType,
+                Collections.<KotlinType>emptyList(), returnType,
                 Modality.FINAL,
                 Visibilities.PUBLIC
         );

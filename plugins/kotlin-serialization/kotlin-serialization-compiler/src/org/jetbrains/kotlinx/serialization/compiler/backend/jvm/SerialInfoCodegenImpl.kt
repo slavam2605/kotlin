@@ -26,6 +26,7 @@ import org.jetbrains.kotlinx.serialization.compiler.resolve.KSerializerDescripto
 import org.jetbrains.kotlin.resolve.BindingContext
 import org.jetbrains.kotlin.resolve.jvm.diagnostics.OtherOrigin
 import org.jetbrains.kotlin.resolve.scopes.getDescriptorsFiltered
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.org.objectweb.asm.Opcodes
 import org.jetbrains.org.objectweb.asm.Type
 
@@ -47,7 +48,16 @@ class SerialInfoCodegenImpl(val codegen: ImplementationBodyCodegen, val thisClas
             codegen.v.newField(OtherOrigin(codegen.myClass.psiOrParent), Opcodes.ACC_PRIVATE or Opcodes.ACC_FINAL or Opcodes.ACC_SYNTHETIC,
                                propFieldName, propType.descriptor, null, null)
             val f = SimpleFunctionDescriptorImpl.create(thisClass, Annotations.EMPTY, prop.name, CallableMemberDescriptor.Kind.SYNTHESIZED, thisClass.source)
-            f.initialize(null, thisClass.thisAsReceiverParameter, emptyList(), emptyList(), prop.type, Modality.FINAL, Visibilities.PUBLIC)
+            f.initialize(
+                null,
+                thisClass.thisAsReceiverParameter,
+                emptyList(),
+                emptyList(),
+                emptyList<KotlinType>(),
+                prop.type,
+                Modality.FINAL,
+                Visibilities.PUBLIC
+            )
             codegen.generateMethod(f, { _, _ ->
                 load(0, thisAsmType)
                 getfield(thisAsmType.internalName, propFieldName, propType.descriptor)

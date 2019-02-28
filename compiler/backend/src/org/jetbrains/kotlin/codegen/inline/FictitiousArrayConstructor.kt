@@ -19,6 +19,7 @@ package org.jetbrains.kotlin.codegen.inline
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
+import org.jetbrains.kotlin.types.KotlinType
 
 internal class FictitiousArrayConstructor(arrayClass: ClassDescriptor) : SimpleFunctionDescriptorImpl(
     arrayClass.containingDeclaration, null, Annotations.EMPTY, arrayClass.name, CallableMemberDescriptor.Kind.SYNTHESIZED,
@@ -30,8 +31,14 @@ internal class FictitiousArrayConstructor(arrayClass: ClassDescriptor) : SimpleF
             val arrayClass = arrayConstructor.constructedClass
             return FictitiousArrayConstructor(arrayClass).apply {
                 this.initialize(
-                    null, null, arrayConstructor.typeParameters, arrayConstructor.valueParameters, arrayClass.defaultType,
-                    Modality.FINAL, Visibilities.PUBLIC
+                    null,
+                    null,
+                    arrayConstructor.typeParameters,
+                    arrayConstructor.valueParameters,
+                    emptyList<KotlinType>(),
+                    arrayClass.defaultType,
+                    Modality.FINAL,
+                    Visibilities.PUBLIC
                 )
                 this.isInline = true
             }

@@ -227,7 +227,7 @@ public class ClosureCodegen extends MemberCodegen<KtElement> {
 
         descriptorForBridges
                 .initialize(null, erasedInterfaceFunction.getDispatchReceiverParameter(), erasedInterfaceFunction.getTypeParameters(),
-                            erasedInterfaceFunction.getValueParameters(), erasedInterfaceFunction.getReturnType(),
+                            erasedInterfaceFunction.getValueParameters(), Collections.<KotlinType>emptyList(), erasedInterfaceFunction.getReturnType(),
                             Modality.OPEN, erasedInterfaceFunction.getVisibility());
 
         DescriptorUtilsKt.setSingleOverridden(descriptorForBridges, erasedInterfaceFunction);

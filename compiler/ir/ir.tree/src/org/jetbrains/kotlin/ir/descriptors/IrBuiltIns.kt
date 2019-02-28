@@ -200,7 +200,16 @@ class IrBuiltIns(
 
             val returnType = KotlinTypeFactory.simpleType(Annotations.EMPTY, typeParameterT.typeConstructor, listOf(), false)
 
-            initialize(null, null, listOf(typeParameterT), listOf(valueParameterName), returnType, Modality.FINAL, Visibilities.PUBLIC)
+            initialize(
+                null,
+                null,
+                listOf(typeParameterT),
+                listOf(valueParameterName),
+                emptyList<KotlinType>(),
+                returnType,
+                Modality.FINAL,
+                Visibilities.PUBLIC
+            )
         }.addStub()
 
     val dataClassArrayMemberHashCodeFun = defineOperator("dataClassArrayMemberHashCode", int, listOf(any))

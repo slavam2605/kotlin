@@ -294,8 +294,16 @@ class SamAdapterFunctionsScope(
 
                 val visibility = syntheticVisibility(sourceFunction, isUsedForExtension = false)
 
-                descriptor.initialize(null, ownerClass.thisAsReceiverParameter, typeParameters, valueParameters, returnType,
-                                      Modality.FINAL, visibility)
+                descriptor.initialize(
+                    null,
+                    ownerClass.thisAsReceiverParameter,
+                    typeParameters,
+                    valueParameters,
+                    emptyList<KotlinType>(),
+                    returnType,
+                    Modality.FINAL,
+                    visibility
+                )
 
                 descriptor.isOperator = sourceFunction.isOperator
                 descriptor.isInfix = sourceFunction.isInfix

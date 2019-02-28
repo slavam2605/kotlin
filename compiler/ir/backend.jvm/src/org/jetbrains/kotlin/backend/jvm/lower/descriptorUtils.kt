@@ -22,6 +22,7 @@ import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.descriptors.impl.ValueParameterDescriptorImpl
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.KotlinType
 
 fun FunctionDescriptor.toStatic(
     newOwner: ClassOrPackageFragmentDescriptor,
@@ -54,7 +55,7 @@ fun FunctionDescriptor.toStatic(
 
     newFunction.initialize(
         null, null, emptyList()/*TODO: type parameters*/,
-        valueParameters, returnType, Modality.FINAL, Visibilities.PUBLIC
+        valueParameters, emptyList<KotlinType>(), returnType, Modality.FINAL, Visibilities.PUBLIC
     )
     return newFunction
 }

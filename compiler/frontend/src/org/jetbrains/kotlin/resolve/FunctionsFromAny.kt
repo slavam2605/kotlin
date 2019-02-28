@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl
 import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.util.OperatorNameConventions
 
 object FunctionsFromAny {
@@ -81,6 +82,7 @@ object FunctionsFromAny {
             classDescriptor.thisAsReceiverParameter,
             functionFromAny.typeParameters,
             functionFromAny.valueParameters.map { it.copy(functionDescriptor, it.name, it.index) },
+            emptyList<KotlinType>(),
             functionFromAny.returnType,
             Modality.OPEN,
             Visibilities.PUBLIC

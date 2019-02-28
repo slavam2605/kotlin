@@ -90,6 +90,7 @@ class DeserializedSimpleFunctionDescriptor(
             extensionReceiverParameter,
             dispatchReceiverParameter,
             typeParameters,
+            emptyList<KotlinType>(),
             unsubstitutedValueParameters,
             unsubstitutedReturnType,
             modality,

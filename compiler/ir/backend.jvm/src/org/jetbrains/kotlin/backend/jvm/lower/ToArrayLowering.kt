@@ -41,6 +41,7 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.DescriptorUtils.isSubclass
 import org.jetbrains.kotlin.resolve.descriptorUtil.builtIns
 import org.jetbrains.kotlin.resolve.descriptorUtil.getAllSuperclassesWithoutAny
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.Variance
 
 internal val toArrayPhase = makeIrFilePhase(
@@ -83,7 +84,7 @@ private class ToArrayLowering(private val context: JvmBackendContext) : ClassLow
             )
             toArrayDescriptor.initialize(
                 null, irClass.descriptor.thisAsReceiverParameter, emptyList(), emptyList(),
-                arrayType, Modality.OPEN, Visibilities.PUBLIC
+                emptyList<KotlinType>(), arrayType, Modality.OPEN, Visibilities.PUBLIC
             )
 
             val toArrayUtilDescriptor = createToArrayUtilDescriptor(builtIns, false)
@@ -146,6 +147,7 @@ private class ToArrayLowering(private val context: JvmBackendContext) : ClassLow
                         SourceElement.NO_SOURCE
                     )
                 ),
+                emptyList<KotlinType>(),
                 genericArrayType,
                 Modality.OPEN,
                 Visibilities.PUBLIC
@@ -225,6 +227,7 @@ private class ToArrayLowering(private val context: JvmBackendContext) : ClassLow
                     SourceElement.NO_SOURCE
                 ) else null
             ),
+            emptyList<KotlinType>(),
             builtIns.array.defaultType,
             Modality.OPEN,
             Visibilities.PUBLIC

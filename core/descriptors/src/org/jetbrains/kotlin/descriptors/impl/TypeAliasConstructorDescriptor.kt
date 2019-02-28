@@ -84,6 +84,7 @@ class TypeAliasConstructorDescriptorImpl private constructor(
                 underlyingConstructorDescriptor.dispatchReceiverParameter?.substitute(substitutorForUnderlyingClass),
                 typeAliasDescriptor.declaredTypeParameters,
                 valueParameters,
+                emptyList<KotlinType>(),
                 returnType,
                 Modality.FINAL,
                 typeAliasDescriptor.visibility
@@ -206,6 +207,7 @@ class TypeAliasConstructorDescriptorImpl private constructor(
                 null,
                 typeAliasDescriptor.declaredTypeParameters,
                 valueParameters,
+                emptyList<KotlinType>(),
                 returnType,
                 Modality.FINAL,
                 typeAliasDescriptor.visibility

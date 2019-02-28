@@ -428,7 +428,7 @@ public class ErrorUtils {
                 null,
                 Collections.<TypeParameterDescriptorImpl>emptyList(), // TODO
                 Collections.<ValueParameterDescriptor>emptyList(), // TODO
-                createErrorType("<ERROR FUNCTION RETURN TYPE>"),
+                Collections.<KotlinType>emptyList(), createErrorType("<ERROR FUNCTION RETURN TYPE>"),
                 Modality.OPEN,
                 Visibilities.PUBLIC
         );

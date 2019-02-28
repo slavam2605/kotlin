@@ -88,6 +88,7 @@ public class JavaMethodDescriptor extends SimpleFunctionDescriptorImpl implement
             @Nullable ReceiverParameterDescriptor extensionReceiverParameter,
             @Nullable ReceiverParameterDescriptor dispatchReceiverParameter,
             @NotNull List<? extends TypeParameterDescriptor> typeParameters,
+            List<KotlinType> typeclassBounds,
             @NotNull List<ValueParameterDescriptor> unsubstitutedValueParameters,
             @Nullable KotlinType unsubstitutedReturnType,
             @Nullable Modality modality,
@@ -95,7 +96,7 @@ public class JavaMethodDescriptor extends SimpleFunctionDescriptorImpl implement
             @Nullable Map<? extends UserDataKey<?>, ?> userData
     ) {
         SimpleFunctionDescriptorImpl descriptor = super.initialize(
-                extensionReceiverParameter, dispatchReceiverParameter, typeParameters, unsubstitutedValueParameters,
+                extensionReceiverParameter, dispatchReceiverParameter, typeParameters, typeclassBounds, unsubstitutedValueParameters,
                 unsubstitutedReturnType, modality, visibility, userData
         );
         setOperator(OperatorChecks.INSTANCE.check(descriptor).isSuccess());

@@ -95,7 +95,7 @@ public class SignaturesPropagationData {
                 containingClass.getThisAsReceiverParameter(),
                 autoTypeParameters,
                 autoValueParameters,
-                autoReturnType,
+                Collections.<KotlinType>emptyList(), autoReturnType,
                 Modality.OPEN,
                 Visibilities.PUBLIC
         );

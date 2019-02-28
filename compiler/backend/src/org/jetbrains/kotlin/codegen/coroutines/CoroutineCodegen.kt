@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.codegen.coroutines
 
 import com.intellij.util.ArrayUtil
-import org.jetbrains.kotlin.backend.common.CodegenUtil
 import org.jetbrains.kotlin.codegen.*
 import org.jetbrains.kotlin.codegen.binding.CodegenBinding
 import org.jetbrains.kotlin.codegen.binding.CodegenBinding.CAPTURES_CROSSINLINE_SUSPEND_LAMBDA
@@ -82,6 +81,7 @@ abstract class AbstractCoroutineCodegen(
                 null,
                 classDescriptor.thisAsReceiverParameter,
                 emptyList(),
+                emptyList<KotlinType>(),
                 parameters.withIndex().map { (index, nameAndType) ->
                     createValueParameterForDoResume(Name.identifier(nameAndType.first), nameAndType.second, index)
                 },
@@ -189,6 +189,7 @@ class CoroutineCodegenForLambda private constructor(
             funDescriptor.dispatchReceiverParameter,
             funDescriptor.typeParameters,
             funDescriptor.valueParameters,
+            emptyList<KotlinType>(),
             funDescriptor.module.getContinuationOfTypeOrAny(
                 builtIns.unitType,
                 state.languageVersionSettings.supportsFeature(LanguageFeature.ReleaseCoroutines)

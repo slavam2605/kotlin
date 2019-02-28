@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.load.java.JavaVisibilities
 import org.jetbrains.kotlin.load.java.JvmAbi
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.org.objectweb.asm.Opcodes
 import java.util.*
 
@@ -106,9 +107,11 @@ class JvmDeclarationFactory(
             null,
             oldDescriptor.typeParameters,
             newValueParameters,
+            emptyList<KotlinType>(),
             oldDescriptor.returnType,
             oldDescriptor.modality,
-            oldDescriptor.visibility)
+            oldDescriptor.visibility
+        )
         val symbol = IrConstructorSymbolImpl(newDescriptor)
         return IrConstructorImpl(
             oldConstructor.startOffset,
