@@ -128,4 +128,9 @@ public abstract class AbstractClassDescriptor implements ClassDescriptor {
     public <R, D> R accept(DeclarationDescriptorVisitor<R, D> visitor, D data) {
         return visitor.visitClassDescriptor(this, data);
     }
+
+    @Override
+    public boolean isTypeclassInterface() {
+        return false;
+    }
 }

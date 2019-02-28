@@ -517,6 +517,8 @@ open class WrappedClassDescriptor(
 
     override fun isActual() = false
 
+    override fun isTypeclassInterface() = false
+
     private val _typeConstructor: TypeConstructor by lazy {
         ClassTypeConstructorImpl(this, emptyList(), owner.superTypes.map { it.toKotlinType() }, LockBasedStorageManager.NO_LOCKS)
     }
@@ -602,6 +604,8 @@ open class WrappedEnumEntryDescriptor(
     }
 
     override fun isActual() = false
+
+    override fun isTypeclassInterface() = false
 
     private val _typeConstructor: TypeConstructor by lazy {
         ClassTypeConstructorImpl(

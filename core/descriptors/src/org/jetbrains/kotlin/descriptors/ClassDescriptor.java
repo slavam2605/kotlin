@@ -66,6 +66,8 @@ public interface ClassDescriptor extends ClassifierDescriptorWithTypeParameters,
 
     boolean isCompanionObject();
 
+    boolean isTypeclassInterface();
+
     boolean isData();
 
     boolean isInline();

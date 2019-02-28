@@ -56,6 +56,7 @@ import static kotlin.collections.CollectionsKt.firstOrNull;
 import static org.jetbrains.kotlin.descriptors.Visibilities.PRIVATE;
 import static org.jetbrains.kotlin.descriptors.Visibilities.PUBLIC;
 import static org.jetbrains.kotlin.diagnostics.Errors.*;
+import static org.jetbrains.kotlin.lexer.KtTokens.TYPECLASS_KEYWORD;
 import static org.jetbrains.kotlin.lexer.KtTokens.INNER_KEYWORD;
 import static org.jetbrains.kotlin.resolve.BindingContext.TYPE;
 import static org.jetbrains.kotlin.resolve.ModifiersChecker.resolveModalityFromModifiers;
@@ -83,6 +84,7 @@ public class LazyClassDescriptor extends ClassDescriptorBase implements ClassDes
     private final boolean isInline;
     private final boolean isExpect;
     private final boolean isActual;
+    private final boolean isTypeclassInterface;
 
     private final Annotations annotations;
     private final Annotations danglingAnnotations;
@@ -151,6 +153,7 @@ public class LazyClassDescriptor extends ClassDescriptorBase implements ClassDes
         this.isData = modifierList != null && modifierList.hasModifier(KtTokens.DATA_KEYWORD);
         this.isInline = modifierList != null && modifierList.hasModifier(KtTokens.INLINE_KEYWORD);
         this.isActual = modifierList != null && PsiUtilsKt.hasActualModifier(modifierList);
+        this.isTypeclassInterface = modifierList != null && modifierList.hasModifier(TYPECLASS_KEYWORD);
 
         this.isExpect = modifierList != null && PsiUtilsKt.hasExpectModifier(modifierList) ||
                         containingDeclaration instanceof ClassDescriptor && ((ClassDescriptor) containingDeclaration).isExpect();
@@ -501,6 +504,11 @@ public class LazyClassDescriptor extends ClassDescriptorBase implements ClassDes
     @Override
     public boolean isActual() {
         return isActual;
+    }
+
+    @Override
+    public boolean isTypeclassInterface() {
+        return isTypeclassInterface;
     }
 
     @NotNull

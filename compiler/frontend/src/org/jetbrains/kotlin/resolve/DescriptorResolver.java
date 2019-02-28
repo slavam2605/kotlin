@@ -528,6 +528,16 @@ public class DescriptorResolver {
             }
         }
         for (KtTypeConstraint constraint : declaration.getTypeConstraints()) {
+            if (constraint.isTypeclassBound()) {
+                KtTypeReference boundTypeReference = constraint.getBoundTypeReference();
+                if (boundTypeReference != null) {
+                    KotlinType type = typeResolver.resolveType(scope, boundTypeReference, trace, false);
+                    if (!TypeUtilsKt.isTypeclassInterface(type)) {
+                        trace.report(TYPECLASS_BOUND_SHOULD_BE_MARKED.on(boundTypeReference));
+                    }
+                }
+                continue;
+            }
             KtSimpleNameExpression subjectTypeParameterName = constraint.getSubjectTypeParameterName();
             if (subjectTypeParameterName == null) {
                 continue;
