@@ -23,7 +23,7 @@ abstract class IrLazyDeclarationBase(
     startOffset: Int,
     endOffset: Int,
     override var origin: IrDeclarationOrigin,
-    private val stubGenerator: DeclarationStubGenerator,
+    protected val stubGenerator: DeclarationStubGenerator,
     protected val typeTranslator: TypeTranslator
 ) : IrElementBase(startOffset, endOffset), IrDeclaration {
 
