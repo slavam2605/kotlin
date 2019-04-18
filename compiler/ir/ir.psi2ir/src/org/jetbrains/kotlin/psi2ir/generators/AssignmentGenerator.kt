@@ -328,6 +328,7 @@ class AssignmentGenerator(statementGenerator: StatementGenerator) : StatementGen
                 scope,
                 ktExpression.startOffsetSkippingComments, ktExpression.endOffset, origin,
                 propertyIrType,
+                descriptor,
                 getterSymbol,
                 getterDescriptor,
                 setterSymbol,
@@ -341,7 +342,8 @@ class AssignmentGenerator(statementGenerator: StatementGenerator) : StatementGen
                 context,
                 scope,
                 ktExpression.startOffsetSkippingComments, ktExpression.endOffset, origin,
-                context.symbolTable.referenceField(descriptor),
+                descriptor,
+                context.symbolTable.referenceField(descriptor.original),
                 propertyIrType,
                 propertyReceiver,
                 superQualifierSymbol

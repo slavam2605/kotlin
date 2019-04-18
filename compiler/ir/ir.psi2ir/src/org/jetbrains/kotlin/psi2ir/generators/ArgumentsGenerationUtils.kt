@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.IrExpressionWithCopy
 import org.jetbrains.kotlin.ir.expressions.IrTypeOperator
 import org.jetbrains.kotlin.ir.expressions.impl.*
-import org.jetbrains.kotlin.ir.types.classifierOrFail
+import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.psiUtil.endOffset
@@ -135,6 +135,29 @@ private fun StatementGenerator.generateThisOrSuperReceiver(receiver: ReceiverVal
         ?: throw AssertionError("'this' or 'super' receiver should be an expression receiver")
     val ktReceiver = expressionReceiver.expression
     return generateThisReceiver(ktReceiver.startOffsetSkippingComments, ktReceiver.endOffset, expressionReceiver.type, classDescriptor)
+}
+
+fun IrExpression.toDispatchReceiverExpectedType(
+    callableDescriptor: CallableDescriptor,
+    context: GeneratorContext
+): IrExpression {
+    val targetKotlinType = callableDescriptor.dispatchReceiverParameter?.type
+        ?: throw AssertionError("$callableDescriptor has no dispatch receiver")
+
+    return implicitCastToExpectedType(context.typeTranslator.translateType(targetKotlinType))
+}
+
+fun IrExpression.implicitCastToExpectedType(expectedType: IrType?): IrExpression {
+    if (expectedType == null) return this
+
+    return IrTypeOperatorCallImpl(
+        startOffset, endOffset,
+        expectedType,
+        IrTypeOperator.IMPLICIT_CAST,
+        expectedType
+    ).also {
+        it.argument = this
+    }
 }
 
 fun StatementGenerator.generateBackingFieldReceiver(
@@ -288,15 +311,7 @@ fun StatementGenerator.castArgumentToFunctionalInterfaceForSamType(
     val kotlinFunctionType = samConversion.getFunctionTypeForSAMClass(samClassDescriptor)
     val irFunctionType = context.typeTranslator.translateType(kotlinFunctionType)
 
-    return IrTypeOperatorCallImpl(
-        irExpression.startOffset, irExpression.endOffset,
-        irFunctionType,
-        IrTypeOperator.IMPLICIT_CAST,
-        irFunctionType
-    ).apply {
-        argument = irExpression
-        typeOperandClassifier = irFunctionType.classifierOrFail
-    }
+    return irExpression.implicitCastToExpectedType(irFunctionType)
 }
 
 fun Generator.getSuperQualifier(resolvedCall: ResolvedCall<*>): ClassDescriptor? {
@@ -426,7 +441,6 @@ fun StatementGenerator.generateSamConversionForValueArgumentsIfRequired(call: Ca
         val originalArgument = call.irValueArgumentsByIndex[i] ?: continue
 
         val targetType = underlyingParameterType.toIrType()
-        val targetClassifier = targetType.classifierOrFail
 
         call.irValueArgumentsByIndex[i] =
             IrTypeOperatorCallImpl(
@@ -434,7 +448,6 @@ fun StatementGenerator.generateSamConversionForValueArgumentsIfRequired(call: Ca
                 targetType,
                 IrTypeOperator.SAM_CONVERSION,
                 targetType,
-                targetClassifier,
                 castArgumentToFunctionalInterfaceForSamType(originalArgument, underlyingParameterType)
             )
     }
