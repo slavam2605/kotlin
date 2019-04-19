@@ -36,10 +36,10 @@ import org.jetbrains.kotlin.resolve.scopes.utils.collectFunctions
 import org.jetbrains.kotlin.resolve.scopes.utils.collectVariables
 import org.jetbrains.kotlin.resolve.selectMostSpecificInEachOverridableGroup
 import org.jetbrains.kotlin.types.*
+import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
 import org.jetbrains.kotlin.types.typeUtil.getImmediateSuperclassNotAny
 import org.jetbrains.kotlin.utils.SmartList
 import org.jetbrains.kotlin.utils.addIfNotNull
-import kotlin.collections.ArrayList
 
 internal abstract class AbstractScopeTowerLevel(
     protected val scopeTower: ImplicitScopeTower
@@ -250,6 +250,17 @@ internal open class ScopeBasedTowerLevel protected constructor(
             )
         }
 
+    override fun getObjects(type: KotlinType): Collection<CandidateWithBoundDispatchReceiver> {
+        // TODO[moklev]
+        return resolutionScope.getContributedObjectVariablesIncludeDeprecated(type, location).map { (classifier, isDeprecated) ->
+            createCandidateDescriptor(
+                classifier,
+                dispatchReceiver = null,
+                specialError = if (isDeprecated) ResolvedUsingDeprecatedVisibility(resolutionScope, location) else null
+            )
+        }
+    }
+
     override fun getFunctions(
         name: Name,
         extensionReceiver: ReceiverValueWithSmartCastInfo?
@@ -400,6 +411,13 @@ private fun ResolutionScope.getContributedObjectVariablesIncludeDeprecated(name:
     val (classifier, isOwnerDeprecated) = getContributedClassifierIncludeDeprecated(name, location) ?: return emptyList()
     val objectDescriptor = getFakeDescriptorForObject(classifier) ?: return emptyList()
     return listOf(DescriptorWithDeprecation(objectDescriptor, isOwnerDeprecated))
+}
+
+private fun ResolutionScope.getContributedObjectVariablesIncludeDeprecated(type: KotlinType, location: LookupLocation): Collection<DescriptorWithDeprecation<VariableDescriptor>> {
+    return getContributedClassifierIncludeDeprecated(type, location).map { (classifier, isOwnerDeprecated) ->
+        val objectDescriptor = getFakeDescriptorForObject(classifier) ?: return emptyList()
+        DescriptorWithDeprecation(objectDescriptor, isOwnerDeprecated)
+    }
 }
 
 fun getFakeDescriptorForObject(classifier: ClassifierDescriptor?): FakeCallableDescriptorForObject? =

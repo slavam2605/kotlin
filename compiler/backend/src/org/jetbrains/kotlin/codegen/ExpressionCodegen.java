@@ -44,6 +44,7 @@ import org.jetbrains.kotlin.config.JVMAssertionsMode;
 import org.jetbrains.kotlin.config.LanguageFeature;
 import org.jetbrains.kotlin.descriptors.*;
 import org.jetbrains.kotlin.descriptors.impl.LocalVariableDescriptor;
+import org.jetbrains.kotlin.descriptors.impl.SyntethicWrapperReceiverParameterDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.SyntheticFieldDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.TypeAliasConstructorDescriptor;
 import org.jetbrains.kotlin.diagnostics.Errors;
@@ -1078,7 +1079,7 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
                     }
                 }
                 ArgumentGenerator argumentGenerator =
-                        new CallBasedArgumentGenerator(this, defaultCallGenerator, valueParameters, mappedTypes);
+                        new CallBasedArgumentGenerator(this, defaultCallGenerator, valueParameters, mappedTypes, typeMapper);
 
                 argumentGenerator.generate(valueArguments, valueArguments, null);
             }
@@ -2427,7 +2428,7 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
                 "Tail recursive method can't be inlined: " + descriptor;
 
         ArgumentGenerator argumentGenerator = new CallBasedArgumentGenerator(this, callGenerator, descriptor.getValueParameters(),
-                                                                             callableMethod.getValueParameterTypes());
+                                                                             callableMethod.getValueParameterTypes(), typeMapper);
 
         invokeMethodWithArguments(callableMethod, resolvedCall, receiver, callGenerator, argumentGenerator);
     }
@@ -2763,7 +2764,9 @@ public class ExpressionCodegen extends KtVisitor<StackValue, StackValue> impleme
 
     @NotNull
     private StackValue generateExtensionReceiver(@NotNull CallableDescriptor descriptor) {
-        ReceiverParameterDescriptor parameter = descriptor.getExtensionReceiverParameter();
+        ValueDescriptor parameter = descriptor instanceof SyntethicWrapperReceiverParameterDescriptor
+                                                ? ((SyntethicWrapperReceiverParameterDescriptor) descriptor).getDescriptor()
+                                                : descriptor.getExtensionReceiverParameter();
         if (myFrameMap.getIndex(parameter) != -1) {
             KotlinType type = parameter.getReturnType();
             return StackValue.local(

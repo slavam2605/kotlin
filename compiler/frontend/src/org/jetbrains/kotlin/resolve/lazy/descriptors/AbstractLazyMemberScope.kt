@@ -22,6 +22,8 @@ import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.BindingTrace
+import org.jetbrains.kotlin.resolve.descriptorUtil.classValueDescriptor
+import org.jetbrains.kotlin.resolve.descriptorUtil.classValueType
 import org.jetbrains.kotlin.resolve.lazy.LazyClassContext
 import org.jetbrains.kotlin.resolve.lazy.ResolveSession
 import org.jetbrains.kotlin.resolve.lazy.data.KtScriptInfo
@@ -32,6 +34,8 @@ import org.jetbrains.kotlin.resolve.scopes.LexicalScope
 import org.jetbrains.kotlin.resolve.scopes.MemberScopeImpl
 import org.jetbrains.kotlin.storage.MemoizedFunctionToNotNull
 import org.jetbrains.kotlin.storage.StorageManager
+import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
 import org.jetbrains.kotlin.utils.Printer
 import java.util.*
 
@@ -67,6 +71,29 @@ protected constructor(
         return result.toList()
     }
 
+    private fun doGetClassesByType(type: KotlinType): List<ClassDescriptor> {
+//        val result = linkedSetOf<ClassDescriptor>()
+//        declarationProvider.getClassOrObjectDeclarationsAll().mapTo(result) {
+//            if (it is KtScriptInfo)
+//                LazyScriptDescriptor(c as ResolveSession, thisDescriptor, it.script.nameAsSafeName, it)
+//            else {
+//                val isExternal = it.modifierList?.hasModifier(KtTokens.EXTERNAL_KEYWORD) ?: false
+//                LazyClassDescriptor(c, thisDescriptor, it.correspondingClassOrObject?.nameAsSafeName ?: TODO("don't known what to do"), it, isExternal)
+//            }
+//        }
+        val allNames = mutableSetOf<Name>()
+        declarationProvider.getClassOrObjectDeclarationsAll().mapNotNullTo(allNames) {
+            when (it) {
+                is KtScriptInfo -> it.script.nameAsSafeName
+                else -> it.correspondingClassOrObject?.nameAsSafeName
+            }
+        }
+        val allResults = allNames.flatMap { name -> classDescriptors(name) }
+        // TODO[moklev] getNonDeclaredClasses(name, result)
+        val typeChecker = KotlinTypeChecker.DEFAULT
+        return allResults.filter { typeChecker.isSubtypeOf(it.defaultType, type) }
+    }
+
     override fun getContributedClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? {
         recordLookup(name, location)
         // NB we should resolve type alias descriptors even if a class descriptor with corresponding name is present
@@ -83,6 +110,10 @@ protected constructor(
             if (result == null) result = typeAlias
         }
         return result
+    }
+
+    override fun getContributedClassifier(type: KotlinType, location: LookupLocation): Collection<ClassifierDescriptor> {
+        return doGetClassesByType(type)
     }
 
     override fun getContributedFunctions(name: Name, location: LookupLocation): Collection<SimpleFunctionDescriptor> {

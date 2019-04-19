@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.scopes.BaseImportingScope
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.utils.Printer
 import org.jetbrains.kotlin.utils.addIfNotNull
 
@@ -41,6 +42,14 @@ class LazyExplicitImportScope(
         return when (packageOrClassDescriptor) {
             is PackageViewDescriptor -> packageOrClassDescriptor.memberScope.getContributedClassifier(declaredName, location)
             is ClassDescriptor -> packageOrClassDescriptor.unsubstitutedInnerClassesScope.getContributedClassifier(declaredName, location)
+            else -> throw IllegalStateException("Should be class or package: $packageOrClassDescriptor")
+        }
+    }
+
+    override fun getContributedClassifier(type: KotlinType, location: LookupLocation): Collection<ClassifierDescriptor> {
+        return when (packageOrClassDescriptor) {
+            is PackageViewDescriptor -> packageOrClassDescriptor.memberScope.getContributedClassifier(type, location)
+            is ClassDescriptor -> packageOrClassDescriptor.unsubstitutedInnerClassesScope.getContributedClassifier(type, location)
             else -> throw IllegalStateException("Should be class or package: $packageOrClassDescriptor")
         }
     }

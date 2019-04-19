@@ -22,7 +22,9 @@ import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.utils.Printer
+import java.lang.IllegalArgumentException
 
 /**
  * Introduces a simple wrapper for internal scope.
@@ -42,6 +44,10 @@ abstract class AbstractScopeAdapter : MemberScope {
 
     override fun getContributedClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? {
         return workerScope.getContributedClassifier(name, location)
+    }
+
+    override fun getContributedClassifier(type: KotlinType, location: LookupLocation): Collection<ClassifierDescriptor> {
+        return workerScope.getContributedClassifier(type, location)
     }
 
     override fun getContributedVariables(name: Name, location: LookupLocation): Collection<PropertyDescriptor> {

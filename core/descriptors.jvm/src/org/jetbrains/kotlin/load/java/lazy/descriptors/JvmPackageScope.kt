@@ -29,6 +29,7 @@ import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.resolve.scopes.flatMapClassifierNamesOrNull
 import org.jetbrains.kotlin.storage.getValue
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.util.collectionUtils.getFirstClassifierDiscriminateHeaders
 import org.jetbrains.kotlin.util.collectionUtils.getFromAllScopes
 import org.jetbrains.kotlin.utils.Printer
@@ -53,6 +54,16 @@ class JvmPackageScope(
         if (javaClassifier != null) return javaClassifier
 
         return getFirstClassifierDiscriminateHeaders(kotlinScopes) { it.getContributedClassifier(name, location) }
+    }
+
+    override fun getContributedClassifier(type: KotlinType, location: LookupLocation): Collection<ClassifierDescriptor> {
+        //TODO[moklev] how handle multiple classifiers?
+        val javaClassifiers = javaScope.getContributedClassifier(type, location)
+        if (javaClassifiers.isNotEmpty())
+            return javaClassifiers
+        return getFirstClassifierDiscriminateHeaders(kotlinScopes) { it.getContributedClassifier(type, location).firstOrNull() }?.let {
+            listOf(it)
+        } ?: emptyList()
     }
 
     override fun getContributedVariables(name: Name, location: LookupLocation): Collection<PropertyDescriptor> {

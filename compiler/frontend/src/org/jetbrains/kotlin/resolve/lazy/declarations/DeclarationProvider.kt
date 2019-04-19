@@ -20,6 +20,7 @@ import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.resolve.lazy.data.KtClassLikeInfo
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
+import org.jetbrains.kotlin.types.KotlinType
 
 interface DeclarationProvider {
     fun getDeclarations(kindFilter: DescriptorKindFilter, nameFilter: (Name) -> Boolean): List<KtDeclaration>
@@ -31,6 +32,8 @@ interface DeclarationProvider {
     fun getDestructuringDeclarationsEntries(name: Name): Collection<KtDestructuringDeclarationEntry>
 
     fun getClassOrObjectDeclarations(name: Name): Collection<KtClassLikeInfo>
+
+    fun getClassOrObjectDeclarationsAll(): Collection<KtClassLikeInfo>
 
     fun getTypeAliasDeclarations(name: Name): Collection<KtTypeAlias>
 

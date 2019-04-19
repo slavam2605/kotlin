@@ -227,6 +227,8 @@ class EffectsExtractingVisitor(
 
             is ExpressionValueArgument -> valueArgument?.toComputation()
 
+            is TypeclassValueArgument -> UNKNOWN_COMPUTATION
+
             // Should be exhaustive
             else -> throw IllegalStateException("Unexpected ResolvedValueArgument $this")
         }

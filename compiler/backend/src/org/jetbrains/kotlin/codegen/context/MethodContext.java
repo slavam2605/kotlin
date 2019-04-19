@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.codegen.coroutines.CoroutineCodegenUtilKt;
 import org.jetbrains.kotlin.codegen.state.GenerationState;
 import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper;
 import org.jetbrains.kotlin.descriptors.*;
+import org.jetbrains.kotlin.descriptors.impl.SyntethicWrapperReceiverParameterDescriptor;
 import org.jetbrains.kotlin.descriptors.impl.SyntheticFieldDescriptor;
 import org.jetbrains.kotlin.resolve.inline.InlineUtil;
 import org.jetbrains.kotlin.types.KotlinType;
@@ -91,7 +92,9 @@ public class MethodContext extends CodegenContext<CallableMemberDescriptor> {
         if (CoroutineCodegenUtilKt.unwrapInitialDescriptorForSuspendFunction(getCallableDescriptorWithReceiver()) == descriptor) {
             return getReceiverExpression(state.getTypeMapper());
         }
-        ReceiverParameterDescriptor parameter = descriptor.getExtensionReceiverParameter();
+        ValueDescriptor parameter = descriptor instanceof SyntethicWrapperReceiverParameterDescriptor
+                                                ? ((SyntethicWrapperReceiverParameterDescriptor) descriptor).getDescriptor()
+                                                : descriptor.getExtensionReceiverParameter();
         return lookupInContext(parameter, StackValue.LOCAL_0, state, ignoreNoOuter);
     }
 

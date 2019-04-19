@@ -36,10 +36,7 @@ import org.jetbrains.kotlin.resolve.calls.callResolverUtil.isInfixCall
 import org.jetbrains.kotlin.resolve.calls.callUtil.createLookupLocation
 import org.jetbrains.kotlin.resolve.calls.context.*
 import org.jetbrains.kotlin.resolve.calls.inference.CoroutineInferenceSupport
-import org.jetbrains.kotlin.resolve.calls.model.KotlinCallDiagnostic
-import org.jetbrains.kotlin.resolve.calls.model.MutableResolvedCall
-import org.jetbrains.kotlin.resolve.calls.model.ResolvedCallImpl
-import org.jetbrains.kotlin.resolve.calls.model.VariableAsFunctionResolvedCallImpl
+import org.jetbrains.kotlin.resolve.calls.model.*
 import org.jetbrains.kotlin.resolve.calls.results.OverloadResolutionResultsImpl
 import org.jetbrains.kotlin.resolve.calls.results.ResolutionResultsHandler
 import org.jetbrains.kotlin.resolve.calls.results.ResolutionStatus
@@ -57,11 +54,14 @@ import org.jetbrains.kotlin.resolve.scopes.receivers.*
 import org.jetbrains.kotlin.resolve.scopes.utils.canBeResolvedWithoutDeprecation
 import org.jetbrains.kotlin.types.DeferredType
 import org.jetbrains.kotlin.types.ErrorUtils
+import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
 import org.jetbrains.kotlin.types.expressions.OperatorConventions
 import org.jetbrains.kotlin.types.isDynamic
 import org.jetbrains.kotlin.util.OperatorNameConventions
 import org.jetbrains.kotlin.utils.addIfNotNull
 import org.jetbrains.kotlin.utils.sure
+import java.lang.IllegalArgumentException
 import java.util.*
 
 class NewResolutionOldInference(
@@ -156,6 +156,27 @@ class NewResolutionOldInference(
         }
     }
 
+    class TypeclassCandidate<T>(val value: T) : Candidate {
+        override val isSuccessful = true
+        override val resultingApplicability = ResolutionCandidateApplicability.RESOLVED
+    }
+
+    class TypeclassImplementationTowerProcessor(val type: KotlinType): ScopeTowerProcessor<TypeclassCandidate<CandidateWithBoundDispatchReceiver>> {
+        override fun process(data: TowerData): List<Collection<TypeclassCandidate<CandidateWithBoundDispatchReceiver>>> {
+            return when (data) {
+                is TowerData.TowerLevel -> {
+                    val objects = data.level.getObjects(type).map { TypeclassCandidate(it) }
+                    return listOf(objects)
+                }
+                else -> emptyList()
+            }
+        }
+
+        override fun recordLookups(skippedData: Collection<TowerData>, name: Name) {
+            // TODO[moklev] what?
+        }
+    }
+
     fun <D : CallableDescriptor> runResolution(
         context: BasicCallResolutionContext,
         name: Name,
@@ -201,6 +222,37 @@ class NewResolutionOldInference(
                 useOrder = kind != ResolutionKind.CallableReference,
                 name = deprecatedName
             )
+        }
+
+        val typeclassTypes = candidates.flatMap { candidate ->
+            candidate.resolvedCall.valueArguments.keys.mapNotNull { descriptor ->
+                if (descriptor.name.asString().startsWith("<typeclassImpl")) descriptor.type else null
+            }
+        }
+        if (typeclassTypes.isNotEmpty()) {
+            val typeclassMap = mutableMapOf<KotlinType, List<CandidateWithBoundDispatchReceiver>>()
+            for (type in typeclassTypes) {
+                val typeclassProcessor = TypeclassImplementationTowerProcessor(type)
+                val typeclassCandidates = towerResolver.runResolve(scopeTower, typeclassProcessor, false, null)
+                typeclassMap[type] = typeclassCandidates.map { it.value }
+            }
+            candidates = candidates.filter { candidate ->
+                val keys = candidate.resolvedCall.valueArguments.keys.toList()
+                keys.forEach { descriptor ->
+                    if (descriptor.name.asString().startsWith("<typeclassImpl")) {
+                        val matchedCandidates = typeclassMap[descriptor.type]
+                        val onlyCandidate = matchedCandidates?.singleOrNull() ?: return@filter false
+                        candidate.resolvedCall.valueArguments.remove(descriptor)
+                        when (val candidateDescriptor = onlyCandidate.descriptor) {
+                            is FakeCallableDescriptorForObject -> candidate.resolvedCall.recordValueArgument(
+                                descriptor, TypeclassValueArgument(candidateDescriptor.classDescriptor)
+                            )
+                            else -> throw IllegalArgumentException("Unexpected descriptor: ${candidateDescriptor.javaClass.toGenericString()}")
+                        }
+                    }
+                }
+                return@filter true
+            }
         }
 
         if (candidates.isEmpty()) {

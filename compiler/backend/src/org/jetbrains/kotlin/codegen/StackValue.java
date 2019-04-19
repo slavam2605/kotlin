@@ -1320,7 +1320,8 @@ public abstract class StackValue {
             return new CallBasedArgumentGenerator(
                     codegen,
                     callGenerator,
-                    resolvedCall.getResultingDescriptor().getValueParameters(), callable.getValueParameterTypes()
+                    resolvedCall.getResultingDescriptor().getValueParameters(), callable.getValueParameterTypes(),
+                    codegen.typeMapper
             );
         }
 

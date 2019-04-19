@@ -18,10 +18,7 @@ package org.jetbrains.kotlin.codegen
 
 import org.jetbrains.kotlin.descriptors.CallableDescriptor
 import org.jetbrains.kotlin.load.java.descriptors.JavaCallableMemberDescriptor
-import org.jetbrains.kotlin.resolve.calls.model.DefaultValueArgument
-import org.jetbrains.kotlin.resolve.calls.model.ExpressionValueArgument
-import org.jetbrains.kotlin.resolve.calls.model.ResolvedValueArgument
-import org.jetbrains.kotlin.resolve.calls.model.VarargValueArgument
+import org.jetbrains.kotlin.resolve.calls.model.*
 import org.jetbrains.kotlin.utils.DFS
 import org.jetbrains.kotlin.utils.mapToIndex
 
@@ -79,6 +76,9 @@ abstract class ArgumentGenerator {
                 is VarargValueArgument -> {
                     generateVararg(declIndex, argument)
                 }
+                is TypeclassValueArgument -> {
+                    generateTypeclassImpl(declIndex, argument)
+                }
                 else -> {
                     generateOther(declIndex, argument)
                 }
@@ -88,6 +88,10 @@ abstract class ArgumentGenerator {
         reorderArgumentsIfNeeded(actualArgsWithDeclIndex)
 
         return defaultArgs
+    }
+
+    protected open fun generateTypeclassImpl(i: Int, argument: TypeclassValueArgument) {
+        throw UnsupportedOperationException("Unsupported typeclass value argument #$i: $argument")
     }
 
     protected open fun generateExpression(i: Int, argument: ExpressionValueArgument) {

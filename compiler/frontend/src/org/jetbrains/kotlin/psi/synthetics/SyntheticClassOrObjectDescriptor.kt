@@ -137,6 +137,7 @@ class SyntheticClassOrObjectDescriptor(
         override fun getPropertyDeclarations(name: Name): Collection<KtProperty> = emptyList()
         override fun getDestructuringDeclarationsEntries(name: Name): Collection<KtDestructuringDeclarationEntry> = emptyList()
         override fun getClassOrObjectDeclarations(name: Name): Collection<KtClassLikeInfo> = emptyList()
+        override fun getClassOrObjectDeclarationsAll(): Collection<KtClassLikeInfo> = emptyList()
         override fun getTypeAliasDeclarations(name: Name): Collection<KtTypeAlias> = emptyList()
         override fun getDeclarationNames() = emptySet<Name>()
     }

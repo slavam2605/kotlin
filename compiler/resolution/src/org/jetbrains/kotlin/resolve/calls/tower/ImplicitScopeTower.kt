@@ -52,6 +52,10 @@ interface ScopeTowerLevel {
     fun getFunctions(name: Name, extensionReceiver: ReceiverValueWithSmartCastInfo?): Collection<CandidateWithBoundDispatchReceiver>
 
     fun recordLookup(name: Name)
+
+    fun getObjects(type: KotlinType): Collection<CandidateWithBoundDispatchReceiver> {
+        return emptyList()
+    }
 }
 
 class CandidateWithBoundDispatchReceiver(

@@ -19,12 +19,17 @@ package org.jetbrains.kotlin.resolve.scopes
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.types.checker.KotlinTypeChecker
 import org.jetbrains.kotlin.utils.Printer
 import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 class ExplicitImportsScope(private val descriptors: Collection<DeclarationDescriptor>) : BaseImportingScope(null) {
     override fun getContributedClassifier(name: Name, location: LookupLocation)
             = descriptors.filter { it.name == name }.firstIsInstanceOrNull<ClassifierDescriptor>()
+
+    override fun getContributedClassifier(type: KotlinType, location: LookupLocation)
+            = descriptors.filterIsInstance<ClassifierDescriptor>().filter { KotlinTypeChecker.DEFAULT.isSubtypeOf(it.defaultType, type) }
 
     override fun getContributedPackage(name: Name)
             = descriptors.filter { it.name == name }.firstIsInstanceOrNull<PackageViewDescriptor>()

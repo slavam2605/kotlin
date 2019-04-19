@@ -86,6 +86,11 @@ class StubBasedPackageMemberDeclarationProvider(
         return result
     }
 
+    override fun getClassOrObjectDeclarationsAll(): Collection<KtClassLikeInfo> {
+        //TODO[moklev] TODO("not implemented")
+        return emptyList()
+    }
+
     override fun getFunctionDeclarations(name: Name): Collection<KtNamedFunction> {
         return runReadAction {
             KotlinTopLevelFunctionFqnNameIndex.getInstance().get(childName(name), project, searchScope)

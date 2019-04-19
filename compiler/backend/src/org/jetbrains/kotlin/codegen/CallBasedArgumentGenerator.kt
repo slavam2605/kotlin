@@ -5,11 +5,13 @@
 
 package org.jetbrains.kotlin.codegen
 
+import org.jetbrains.kotlin.codegen.state.KotlinTypeMapper
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.descriptors.FunctionDescriptor
 import org.jetbrains.kotlin.descriptors.ValueParameterDescriptor
 import org.jetbrains.kotlin.resolve.calls.model.DefaultValueArgument
 import org.jetbrains.kotlin.resolve.calls.model.ExpressionValueArgument
+import org.jetbrains.kotlin.resolve.calls.model.TypeclassValueArgument
 import org.jetbrains.kotlin.resolve.calls.model.VarargValueArgument
 import org.jetbrains.kotlin.resolve.jvm.AsmTypes.OBJECT_TYPE
 import org.jetbrains.kotlin.types.upperIfFlexible
@@ -19,7 +21,8 @@ class CallBasedArgumentGenerator(
     private val codegen: ExpressionCodegen,
     private val callGenerator: CallGenerator,
     private val valueParameters: List<ValueParameterDescriptor>,
-    private val valueParameterTypes: List<Type>
+    private val valueParameterTypes: List<Type>,
+    private val typeMapper: KotlinTypeMapper
 ) : ArgumentGenerator() {
     private val isVarargInvoke: Boolean =
         JvmCodegenUtil.isDeclarationOfBigArityFunctionInvoke(valueParameters.firstOrNull()?.containingDeclaration)
@@ -36,6 +39,13 @@ class CallBasedArgumentGenerator(
                 "Value parameters and their types mismatch in sizes: ${valueParameters.size} != ${valueParameterTypes.size}"
             }
         }
+    }
+
+    override fun generateTypeclassImpl(i: Int, argument: TypeclassValueArgument) {
+        callGenerator.putValueIfNeeded(
+            getJvmKotlinType(i),
+            StackValue.singleton(argument.descriptor, typeMapper)
+        )
     }
 
     override fun generateExpression(i: Int, argument: ExpressionValueArgument) {

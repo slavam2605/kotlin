@@ -33,6 +33,7 @@ import org.jetbrains.kotlin.resolve.scopes.*
 import org.jetbrains.kotlin.resolve.source.KotlinSourceElement
 import org.jetbrains.kotlin.script.ScriptDependenciesProvider
 import org.jetbrains.kotlin.storage.getValue
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.utils.Printer
 
 data class FileScopes(val lexicalScope: LexicalScope, val importingScope: ImportingScope, val importForceResolver: ImportForceResolver)
@@ -288,6 +289,14 @@ class FileScopeFactory(
                     kindFilter.withoutKinds(DescriptorKindFilter.PACKAGES_MASK),
                     { name -> name !in excludedNames && nameFilter(name) }
                 ).filter { it !is PackageViewDescriptor } // subpackages of the current package not accessible by the short name
+            }
+
+            override fun getContributedClassifier(type: KotlinType, location: LookupLocation): List<ClassifierDescriptor> {
+                val classifiers = scope.getContributedClassifier(type, location)
+                return classifiers.filter { classifier ->
+                    val visible = Visibilities.isVisibleIgnoringReceiver(classifier as DeclarationDescriptorWithVisibility, fromDescriptor)
+                    filteringKind == if (visible) FilteringKind.VISIBLE_CLASSES else FilteringKind.INVISIBLE_CLASSES
+                }
             }
 
             override fun computeImportedNames() = packageView.memberScope.computeAllNames()

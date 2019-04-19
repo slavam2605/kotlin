@@ -19,6 +19,9 @@ package org.jetbrains.kotlin.resolve.scopes
 import org.jetbrains.kotlin.descriptors.*
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.types.KotlinType
+import sun.reflect.generics.reflectiveObjects.NotImplementedException
+import java.lang.IllegalArgumentException
 
 interface ResolutionScope {
     /**
@@ -56,5 +59,12 @@ interface ResolutionScope {
 
     fun recordLookup(name: Name, location: LookupLocation) {
         getContributedFunctions(name, location)
+    }
+
+    fun getContributedClassifierIncludeDeprecated(type: KotlinType, location: LookupLocation): List<DescriptorWithDeprecation<ClassifierDescriptor>> =
+        getContributedClassifier(type, location).map { DescriptorWithDeprecation.createNonDeprecated(it) }
+
+    fun getContributedClassifier(type: KotlinType, location: LookupLocation): Collection<ClassifierDescriptor> {
+        throw IllegalArgumentException(this.javaClass.toString())
     }
 }

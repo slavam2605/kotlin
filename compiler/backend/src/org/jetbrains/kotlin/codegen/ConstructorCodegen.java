@@ -382,7 +382,7 @@ public class ConstructorCodegen {
                 "Delegating constructor has not enough parameters";
 
         return new CallBasedArgumentGenerator(codegen, codegen.defaultCallGenerator, delegatingConstructor.getValueParameters(),
-                                              delegatingCallable.getValueParameterTypes());
+                                              delegatingCallable.getValueParameterTypes(), codegen.typeMapper);
     }
 
     @NotNull
@@ -442,7 +442,7 @@ public class ConstructorCodegen {
         }
         else {
             return new CallBasedArgumentGenerator(codegen, codegen.defaultCallGenerator, superConstructor.getValueParameters(),
-                                                  superCallable.getValueParameterTypes());
+                                                  superCallable.getValueParameterTypes(), codegen.typeMapper);
         }
     }
 

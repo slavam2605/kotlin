@@ -16,6 +16,8 @@
 
 package org.jetbrains.kotlin.resolve.calls.tower
 
+import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
+import org.jetbrains.kotlin.descriptors.impl.SyntethicWrapperReceiverParameterDescriptor
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.progress.ProgressIndicatorAndCompilationCanceledStatus
 import org.jetbrains.kotlin.resolve.calls.tasks.ExplicitReceiverKind
@@ -23,6 +25,7 @@ import org.jetbrains.kotlin.resolve.descriptorUtil.HIDES_MEMBERS_NAME_LIST
 import org.jetbrains.kotlin.resolve.scopes.ImportingScope
 import org.jetbrains.kotlin.resolve.scopes.LexicalScope
 import org.jetbrains.kotlin.resolve.scopes.ResolutionScope
+import org.jetbrains.kotlin.resolve.scopes.receivers.ExtensionReceiver
 import org.jetbrains.kotlin.resolve.scopes.receivers.ReceiverValueWithSmartCastInfo
 import org.jetbrains.kotlin.resolve.scopes.utils.parentsWithSelf
 import org.jetbrains.kotlin.types.KotlinType
@@ -79,7 +82,7 @@ class TowerResolver {
         scopeTower: ImplicitScopeTower,
         processor: ScopeTowerProcessor<C>,
         useOrder: Boolean,
-        name: Name
+        name: Name?
     ): Collection<C> = scopeTower.run(processor, SuccessfulResultCollector(), useOrder, name)
 
     fun <C : Candidate> collectAllCandidates(
@@ -92,7 +95,7 @@ class TowerResolver {
         processor: ScopeTowerProcessor<C>,
         resultCollector: ResultCollector<C>,
         useOrder: Boolean,
-        name: Name
+        name: Name?
     ): Collection<C> = Task(this, processor, resultCollector, useOrder, name).run()
 
     private inner class Task<out C : Candidate>(
@@ -100,7 +103,7 @@ class TowerResolver {
         private val processor: ScopeTowerProcessor<C>,
         private val resultCollector: ResultCollector<C>,
         private val useOrder: Boolean,
-        private val name: Name
+        private val name: Name?
     ) {
         private val isNameForHidesMember = name in HIDES_MEMBERS_NAME_LIST
         private val skippedDataForLookup = mutableListOf<TowerData>()
@@ -191,6 +194,14 @@ class TowerResolver {
                             .process(scope.mayFitForName(name))?.let { return it }
                     }
 
+                    (scope.ownerDescriptor as? SimpleFunctionDescriptor)?.valueParameters?.getOrNull(0)?.let { valueDescriptor ->
+                        val receiverValue = ExtensionReceiver(SyntethicWrapperReceiverParameterDescriptor(scope.ownerDescriptor as SimpleFunctionDescriptor, valueDescriptor), valueDescriptor.type, null)
+                        val receiverValueWithSmartCastInfo = ReceiverValueWithSmartCastInfo(receiverValue, emptySet(), true)
+                        receiverValueWithSmartCastInfo
+                            .let(this::processImplicitReceiver)
+                            ?.let { return it }
+                    }
+
                     implicitScopeTower.getImplicitReceiver(scope)
                         ?.let(this::processImplicitReceiver)
                         ?.let { return it }
@@ -211,6 +222,7 @@ class TowerResolver {
                 TowerData.BothTowerLevelAndImplicitReceiver(hidesMembersLevel, implicitReceiver).process()?.let { return it }
             }
 
+            // TODO probably add typeclass implicit receiver here
             // members of implicit receiver or member extension for explicit receiver
             TowerData.TowerLevel(MemberScopeTowerLevel(implicitScopeTower, implicitReceiver))
                 .process(implicitReceiver.mayFitForName(name))?.let { return it }
@@ -235,10 +247,11 @@ class TowerResolver {
         }
 
         private fun recordLookups() {
-            processor.recordLookups(skippedDataForLookup, name)
+            name?.let { processor.recordLookups(skippedDataForLookup, it) }
         }
 
-        private fun ReceiverValueWithSmartCastInfo.mayFitForName(name: Name): Boolean {
+        private fun ReceiverValueWithSmartCastInfo.mayFitForName(name: Name?): Boolean {
+            if (name == null) return true
             if (receiverValue.type.mayFitForName(name)) return true
             if (possibleTypes.isEmpty()) return false
             return possibleTypes.any { it.mayFitForName(name) }
@@ -249,8 +262,8 @@ class TowerResolver {
                     !memberScope.definitelyDoesNotContainName(name) ||
                     !memberScope.definitelyDoesNotContainName(OperatorNameConventions.INVOKE)
 
-        private fun ResolutionScope.mayFitForName(name: Name) =
-            !definitelyDoesNotContainName(name) || !definitelyDoesNotContainName(OperatorNameConventions.INVOKE)
+        private fun ResolutionScope.mayFitForName(name: Name?) =
+            name == null || !definitelyDoesNotContainName(name) || !definitelyDoesNotContainName(OperatorNameConventions.INVOKE)
     }
 
     fun <C : Candidate> runWithEmptyTowerData(

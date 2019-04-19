@@ -23,6 +23,7 @@ import org.jetbrains.kotlin.descriptors.VariableDescriptor
 import org.jetbrains.kotlin.incremental.components.LookupLocation
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.resolve.scopes.utils.takeSnapshot
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.utils.SmartList
 import java.util.*
 
@@ -47,6 +48,11 @@ abstract class LexicalScopeStorage(
 
     override fun getContributedClassifier(name: Name, location: LookupLocation) =
         variableOrClassDescriptorByName(name) as? ClassifierDescriptor
+
+    override fun getContributedClassifier(type: KotlinType, location: LookupLocation): Collection<ClassifierDescriptor> {
+        //TODO[moklev] implement
+        return emptyList()
+    }
 
     override fun getContributedVariables(name: Name, location: LookupLocation) =
         listOfNotNull(variableOrClassDescriptorByName(name) as? VariableDescriptor)

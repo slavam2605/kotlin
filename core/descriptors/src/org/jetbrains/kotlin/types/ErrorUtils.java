@@ -190,6 +190,22 @@ public class ErrorUtils {
 
         @NotNull
         @Override
+        public List<DescriptorWithDeprecation<ClassifierDescriptor>> getContributedClassifierIncludeDeprecated(
+                @NotNull KotlinType type, @NotNull LookupLocation location
+        ) {
+            return Collections.emptyList();
+        }
+
+        @NotNull
+        @Override
+        public List<ClassifierDescriptor> getContributedClassifier(
+                @NotNull KotlinType type, @NotNull LookupLocation location
+        ) {
+            return Collections.singletonList((ClassifierDescriptor) createErrorClass(type.toString()));
+        }
+
+        @NotNull
+        @Override
         public Set<? extends PropertyDescriptor> getContributedVariables(@NotNull Name name, @NotNull LookupLocation location) {
             return ERROR_PROPERTY_GROUP;
         }
@@ -266,6 +282,22 @@ public class ErrorUtils {
                 @NotNull Name name, @NotNull LookupLocation location
         ) {
             throw new IllegalStateException(debugMessage + ", required name: " + name);
+        }
+
+        @NotNull
+        @Override
+        public List<DescriptorWithDeprecation<ClassifierDescriptor>> getContributedClassifierIncludeDeprecated(
+                @NotNull KotlinType type, @NotNull LookupLocation location
+        ) {
+            throw new IllegalStateException(debugMessage + ", required type: " + type);
+        }
+
+        @NotNull
+        @Override
+        public List<ClassifierDescriptor> getContributedClassifier(
+                @NotNull KotlinType type, @NotNull LookupLocation location
+        ) {
+            throw new IllegalStateException(debugMessage + ", required type: " + type);
         }
 
         @NotNull

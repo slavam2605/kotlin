@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.kotlin.builtins.functions.FunctionInvokeDescriptor;
 import org.jetbrains.kotlin.descriptors.*;
+import org.jetbrains.kotlin.descriptors.impl.FunctionDescriptorImpl;
+import org.jetbrains.kotlin.descriptors.impl.SimpleFunctionDescriptorImpl;
 import org.jetbrains.kotlin.diagnostics.Diagnostic;
 import org.jetbrains.kotlin.name.Name;
 import org.jetbrains.kotlin.psi.*;
@@ -311,6 +313,9 @@ public class ValueArgumentsToParametersMapper {
                     }
                     else if (valueParameter.getVarargElementType() != null) {
                         candidateCall.recordValueArgument(valueParameter, new VarargValueArgument());
+                    }
+                    else if (valueParameter.getName().asString().startsWith("<typeclassImpl")) {
+                        candidateCall.recordValueArgument(valueParameter, new ExpressionValueArgument(null));
                     }
                     else {
                         tracing.noValueForParameter(candidateCall.getTrace(), valueParameter);

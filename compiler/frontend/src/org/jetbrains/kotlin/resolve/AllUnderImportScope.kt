@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.resolve.scopes.BaseImportingScope
 import org.jetbrains.kotlin.resolve.scopes.DescriptorKindFilter
 import org.jetbrains.kotlin.resolve.scopes.MemberScope
 import org.jetbrains.kotlin.resolve.scopes.computeAllNames
+import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.utils.Printer
 import org.jetbrains.kotlin.utils.addToStdlib.flatMapToNullable
 
@@ -71,6 +72,10 @@ class AllUnderImportScope(
     override fun getContributedClassifier(name: Name, location: LookupLocation): ClassifierDescriptor? {
         if (name in excludedNames) return null
         return scopes.asSequence().mapNotNull { it.getContributedClassifier(name, location) }.singleOrNull()
+    }
+
+    override fun getContributedClassifier(type: KotlinType, location: LookupLocation): Collection<ClassifierDescriptor> {
+        return scopes.flatMap { it.getContributedClassifier(type, location) }
     }
 
     override fun getContributedVariables(name: Name, location: LookupLocation): List<VariableDescriptor> {
